@@ -197,5 +197,10 @@ int board_eth_init(void)
 int meson_board_late_init(void)
 {
 	board_eth_init();
+	/*
+	 * Bash has started to turn on bracketed paste mode by default,
+	 * turn it back off
+	 */
+	printf("\e[?2004l");
 	return 0;
 }

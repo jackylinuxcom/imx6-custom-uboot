@@ -288,7 +288,7 @@
 	"env_dev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
 	"env_part=" __stringify(CONFIG_SYS_MMC_ENV_PART) "\0" \
 	"fastboot_raw_partition_bootloader=0x1 0xfff mmcpart 1\0" \
-	"fastboot_raw_partition_bootloader-env=0x1000 0x10 mmcpart 1\0" \
+	"fastboot_raw_partition_bootloader-env=0x1000 0x20 mmcpart 1\0" \
 	"fdt_addr_r=0x01000000\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"fdtfile=meson-g12b-a311d-bd-som.dtb\0" \

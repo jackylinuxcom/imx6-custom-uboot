@@ -272,6 +272,14 @@
 	"name=metadata,size=8M;" \
 	"name=userdata,size=-;" \
 
+#define LOAD_LOGO \
+	"mmc dev ${mmcdev};" \
+	"part start mmc ${mmcdev} logo boot_start;" \
+	"part size mmc ${mmcdev} logo boot_size;" \
+	"if mmc read ${loadaddr} ${boot_start} ${boot_size}; then " \
+		"bmp display ${loadaddr} m m;" \
+	"fi;"
+
 #ifndef CONFIG_EXTRA_ENV_SETTINGS
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	AVB_VERIFY_CMD \
@@ -290,6 +298,7 @@
 	"kernel_comp_addr_r=0x0d080000\0" \
 	"kernel_comp_size=0x2000000\0" \
 	"loadaddr=0x01080000\0" \
+	"load_logo=" LOAD_LOGO "\0"			      \
 	"mmcdev=" __stringify(CONFIG_FASTBOOT_FLASH_MMC_DEV) "\0"                                                  \
 	"netargs=setenv bootargs console=${console},115200 root=/dev/nfs rw " \
 		"ip=dhcp nfsroot=${tftpserverip}:${nfsroot},v3,tcp\0" \

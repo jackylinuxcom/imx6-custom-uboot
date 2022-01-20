@@ -115,6 +115,26 @@
 	"fdt apply $dtbo0_addr;" \
 	"setenv bootargs \"$bootargs androidboot.dtbo_idx=$dtbo_index \";"\
 
+#define PREPARE_CMDLINE \
+	"setenv bootargs \"${bootargs} console=${console},115200 \"; " \
+	"setenv bootargs \"${bootargs} androidboot.serialno=${serial#}\"; " \
+	"if itest.s \"x\" != \"x$selinux\" ; then " \
+		"setenv bootargs \"${bootargs} androidboot.selinux=${selinux}\"; " \
+	"fi; " \
+	"if itest.s \"x\" != \"x${lcd_density}\" ; then " \
+		"setenv bootargs \"$bootargs androidboot.lcd_density=${lcd_density}\"; " \
+	"else " \
+		"setenv bootargs \"$bootargs androidboot.lcd_density=213\"; " \
+	"fi; " \
+	"if itest.s \"x\" != \"x$hwrotation\" ; then " \
+		"setenv bootargs \"$bootargs androidboot.hwrotation=$hwrotation\"; " \
+	"fi; " \
+	"if itest.s \"x\" != \"x${loglevel}\" ; then " \
+		"setenv bootargs \"${bootargs} loglevel=${loglevel}\"; " \
+	"else " \
+		"setenv bootargs \"${bootargs} quiet\"; " \
+	"fi; " \
+
 #define BOOT_CMD "bootm ${loadaddr} ${loadaddr} ${fdt_addr_r};"
 
 /* fastboot: the tool is started when:
@@ -168,7 +188,6 @@
 		"if test \"${run_recovery}\" -eq 1; then " \
 			"echo Running Recovery...;" \
 			"mmc dev ${mmcdev};" \
-			"setenv bootargs \"${bootargs} androidboot.serialno=${serial#}\";" \
 			AB_SELECT_SLOT \
 			AB_SELECT_ARGS \
 			AVB_VERIFY_CHECK \
@@ -176,6 +195,7 @@
 			"part size mmc ${mmcdev} " RECOVERY_PARTITION "${slot_suffix} boot_size;" \
 			"if mmc read ${loadaddr} ${boot_start} ${boot_size}; then " \
 				PREPARE_FDT \
+				PREPARE_CMDLINE \
 				"echo Running Android Recovery...;" \
 				BOOT_CMD \
 			"fi;" \
@@ -194,7 +214,6 @@
 	"bootcmd_system=" \
 		"echo Loading Android boot partition...;" \
 		"mmc dev ${mmcdev};" \
-		"setenv bootargs ${bootargs} androidboot.serialno=${serial#};" \
 		AB_SELECT_SLOT \
 		AB_SELECT_ARGS \
 		AVB_VERIFY_CHECK \
@@ -202,6 +221,7 @@
 		"part size mmc ${mmcdev} boot${slot_suffix} boot_size;" \
 		"if mmc read ${loadaddr} ${boot_start} ${boot_size}; then " \
 			PREPARE_FDT \
+			PREPARE_CMDLINE \
 			"setenv bootargs \"${bootargs} " AB_BOOTARGS "\"  ; " \
 			"echo Running Android...;" \
 			BOOT_CMD \

@@ -2351,6 +2351,10 @@ endif	# skip-makefile
 PHONY += FORCE
 FORCE:
 
+.PHONY : acs.bin
+acs.bin: tools prepare u-boot.bin
+	$(Q)$(MAKE) -C $(srctree)/board/$(BOARDDIR)/firmware/acs all FIRMWARE=$@
+
 # Declare the contents of the PHONY variable as phony.  We keep that
 # information in a variable so we can use it in if_changed and friends.
 .PHONY: $(PHONY)

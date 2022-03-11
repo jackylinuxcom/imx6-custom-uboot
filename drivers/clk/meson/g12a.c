@@ -92,8 +92,11 @@
 
 #define XTAL_RATE 24000000
 
+#define NUM_CLKS 178
+
 struct meson_clk {
 	struct regmap *map;
+	unsigned enable_count[NUM_CLKS];
 };
 
 static ulong meson_div_get_rate(struct clk *clk, unsigned long id);
@@ -106,8 +109,6 @@ static ulong meson_clk_set_rate_by_id(struct clk *clk, unsigned long id,
 				      ulong rate, ulong current_rate);
 static ulong meson_mux_get_parent(struct clk *clk, unsigned long id);
 static ulong meson_clk_get_rate_by_id(struct clk *clk, unsigned long id);
-
-#define NUM_CLKS 178
 
 static struct meson_gate gates[NUM_CLKS] = {
 	/* Everything Else (EE) domain gates */
@@ -163,6 +164,14 @@ static int meson_set_gate_by_id(struct clk *clk, unsigned long id, bool on)
 
 	if (id >= ARRAY_SIZE(gates))
 		return -ENOENT;
+
+	if (on) {
+		if (priv->enable_count[id]++)
+			return 0;
+	} else {
+		if (--priv->enable_count[id])
+			return 0;
+	}
 
 	gate = &gates[id];
 
